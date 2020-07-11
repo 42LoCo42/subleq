@@ -8,7 +8,7 @@ version:             0.1.0.0
 -- description:
 -- bug-reports:
 -- license:
--- license-file:        LICENSE
+license-file:        LICENSE
 author:              Leon Schumacher
 maintainer:          11213kbm@gmail.com
 -- copyright:
@@ -18,7 +18,7 @@ build-type:          Simple
 
 executable subleq
   main-is:             Main.hs
-  -- other-modules:
+  other-modules:       Assembler Execute IntTools ParseSubleq Parser Subleq
   -- other-extensions:
   build-depends:       base >=4.13 && <4.14, vector, bytestring
   -- hs-source-dirs:

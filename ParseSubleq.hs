@@ -90,21 +90,17 @@ functionP name f = f <$> (
 
 -- null function --------------------------------------------------------------
 nullF :: [Cell] -> [Cell]
-nullF [c@(Cell Nothing _)] = [c, c]
+nullF [c] = [c, c]
 nullF cs = cs
 
 -- add function ---------------------------------------------------------------
 addF :: [Cell] -> [Cell]
-addF [s1@(Cell Nothing _), s2@(Cell Nothing _), tmp@(Cell Nothing _)] =
-  [s1, tmp, Cell Nothing (Offset 1), tmp, s2]
+addF [s1, s2, tmp] = [s1, tmp, Cell Nothing (Offset 1), tmp, s2]
 addF cs = cs
 
 -- loop function --------------------------------------------------------------
 loopF :: [Cell] -> [Cell]
-loopF
-  (p@(Cell Nothing _) : to@(Cell Nothing _) :
-  inc@(Cell Nothing _) :
-  tmp1@(Cell Nothing _) : tmp2@(Cell Nothing _) : f) =
+loopF (p : to : inc : tmp1 : tmp2 : f) =
   f ++ intercalate [nxt]
     [ [inc, p]
     , nullF [tmp1]
