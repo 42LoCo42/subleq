@@ -3,6 +3,7 @@
 # 	address of cell with target value
 # 	address of cell with modifier
 # 	temporary 1 and 2
+# temporary 2 must be clean before each iteration
 # temporary 2 is clean after each iteration
 
 start:
@@ -13,3 +14,13 @@ loop(char end inc val inv) end()
 null(val) inv: start
 inc: -1
 char: char+1 "Hello, World!\n" end: end
+
+# start:
+# null(val) ;
+# add(end val inv) ;
+# null(inv) ;
+# out(val:0) ;
+# loop(end char inc val inv) inv:start
+# null(inv) end()
+# inc: 1
+# char: char+1 "Hello, World!\n" end: end-1
