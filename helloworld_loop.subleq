@@ -1,6 +1,6 @@
 # loop:
 # 	address of cell to modify
-#   address of cell with target value
+# 	address of cell with target value
 # 	address of cell with modifier
 # 	temporary 1 and 2
 # temporary 2 is clean after each iteration
