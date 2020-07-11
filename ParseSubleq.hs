@@ -13,7 +13,7 @@ import Control.Applicative ((<|>), many)
 singleton :: a -> [a]
 singleton a = [a]
 
--- Inline space -----------------------------------------------------------------
+-- Inline space ---------------------------------------------------------------
 wsP :: Parser String
 wsP = spanP (`elem` [' ', '\t'])
 
