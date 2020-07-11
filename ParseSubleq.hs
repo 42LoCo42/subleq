@@ -3,10 +3,10 @@ module ParseSubleq where
 import Parser
 import Subleq
 import IntTools
+import Functions
 
-import Data.Char (isAscii, isLetter, isDigit, ord)
+import Data.Char (isAscii, isLetter, isDigit, ord, isSpace)
 import Data.Int (Int64)
-import Data.List (intercalate)
 import Control.Applicative ((<|>), many)
 
 -- Helper ---------------------------------------------------------------------
@@ -29,8 +29,10 @@ maybeP (Parser p1) = Parser $ \input ->
 lblP :: Parser Label
 lblP = spanP (\c -> isAscii c && (isLetter c || isDigit c))
 
-lblDefP :: Parser (Maybe Label)
-lblDefP = maybeP $ lblP <* charP ':'
+lblDefP :: Parser Label
+lblDefP = lblP <* (ms <* charP ':' <* ms)
+  where
+    ms = maybeP $ spanP isSpace
 
 -- Numbers --------------------------------------------------------------------
 numP :: Parser Int64
@@ -65,61 +67,47 @@ codeP =
 
 -- Cell group -----------------------------------------------------------------
 cellP :: Parser Cell
-cellP = Cell <$> lblDefP <*> codeP
+cellP =
+  Cell <$> (maybeP lblDefP) <*> codeP <|>
+  const (Cell Nothing (Offset 1)) <$> charP ';'
 
 -- String ---------------------------------------------------------------------
-stringLiteralP :: Parser String
+stringLiteralP :: Parser [Cell]
 stringLiteralP =
+  map (Cell Nothing . Direct . ec . ord) .
   (\s -> read ("\"" ++ s ++ "\"")) <$>
   (charP '"' *> spanP (/= '"') <* charP '"')
 
-normalSLP :: Parser [Cell]
-normalSLP = map (Cell Nothing . Direct . ec . ord) <$> stringLiteralP
-
-labeledSLP :: Parser [Cell]
-labeledSLP = do
+-- Labeled cells --------------------------------------------------------------
+lbldCellsP :: Parser [Cell] -> Parser [Cell]
+lbldCellsP p = do
   lbl <- lblDefP
-  sl <- normalSLP
-  let (Cell _ c : t) = sl
-  return $ if null sl then [] else (Cell lbl c : t)
+  cs <- p
+  let (Cell _ c : t) = cs
+  return $ if null cs then [] else (Cell (Just lbl) c : t)
 
 -- Generic function parser ----------------------------------------------------
 functionP :: String -> ([Cell] -> [Cell]) -> Parser [Cell]
 functionP name f = f <$> (
   stringP name *> charP '(' *> (lineP <|> pure []) <* charP ')')
 
--- null function --------------------------------------------------------------
-nullF :: [Cell] -> [Cell]
-nullF [c] = [c, c]
-nullF cs = cs
-
--- add function ---------------------------------------------------------------
-addF :: [Cell] -> [Cell]
-addF [s1, s2, tmp] = [s1, tmp, Cell Nothing (Offset 1), tmp, s2]
-addF cs = cs
-
--- loop function --------------------------------------------------------------
-loopF :: [Cell] -> [Cell]
-loopF (p : to : inc : tmp1 : tmp2 : f) =
-  f ++ intercalate [nxt]
-    [ [inc, p]
-    , nullF [tmp1]
-    , addF [to, tmp1, tmp2]
-    , nullF [tmp2]
-    , [p, tmp1]]
-  where
-    nxt = Cell Nothing (Offset 1)
-loopF cs = cs
-
 -- Function group -------------------------------------------------------------
 allFunctionsP :: Parser [Cell]
 allFunctionsP =
-  functionP "null" nullF <|> functionP "add" addF <|>
-  functionP "loop" loopF
+  foldr1 (<|>) $ map (uncurry functionP)
+  [ ("end" , endF )
+  , ("null", nullF)
+  , ("out" , outF )
+  , ("add" , addF )
+  , ("loop", loopF)
+  ]
 
 -- Cells group ----------------------------------------------------------------
 cellsP :: Parser [Cell]
-cellsP = allFunctionsP <|> singleton <$> cellP <|> labeledSLP <|> normalSLP
+cellsP = foldr1 (<|>) (lbldGroups ++ realGroups) <|> singleton <$> cellP
+  where
+    realGroups = [allFunctionsP, stringLiteralP]
+    lbldGroups = map lbldCellsP realGroups
 
 -- Line group -----------------------------------------------------------------
 lineP :: Parser [Cell]

@@ -18,7 +18,8 @@ build-type:          Simple
 
 executable subleq
   main-is:             Main.hs
-  other-modules:       Assembler Execute IntTools ParseSubleq Parser Subleq
+  other-modules:       Assembler Execute Functions IntTools
+                       ParseSubleq Parser Subleq
   -- other-extensions:
   build-depends:       base >=4.13 && <4.14, vector, bytestring
   -- hs-source-dirs:

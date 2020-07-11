@@ -5,5 +5,11 @@
 # 	temporary 1 and 2
 # temporary 2 is clean after each iteration
 
-loop(H E inc a Z add(H a Z) ?+1 null(Z) ?+1 a:0 -1 ?+1) -1 null(a) Z:0
-inc:-1 H:H+1 "Hello, World!\n" E:E
+start:
+add(char val inv) ;
+null(inv) ;
+out(val:0) ;
+loop(char end inc val inv) end()
+null(val) inv: start
+inc: -1
+char: char+1 "Hello, World!\n" end: end

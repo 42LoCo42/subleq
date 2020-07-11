@@ -18,7 +18,7 @@ main = do
   else do
     raw <- readFile $ head args
     let (Just (_, program)) = runParser programP raw
-    let ap@(AP _ p) = assemble 8 program
+    let ap@(AP _ p) = assemble 64 program
     print ap
     print $ length p
     execute 0 ap
