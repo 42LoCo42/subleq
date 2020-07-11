@@ -1,0 +1,9 @@
+# loop:
+# 	address of cell to modify
+#   address of cell with target value
+# 	address of cell with modifier
+# 	temporary 1 and 2
+# temporary 2 is clean after each iteration
+
+loop(H E inc a Z add(H a Z) ?+1 null(Z) ?+1 a:0 -1 ?+1) -1 null(a) Z:0
+inc:-1 H:H+1 "Hello, World!\n" E:E
