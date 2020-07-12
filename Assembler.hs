@@ -1,11 +1,11 @@
 module Assembler where
 
-import Subleq
 import IntTools
+import Subleq
 
-import qualified Data.Vector as V
 import Data.Int (Int64)
 import Data.Maybe (fromMaybe)
+import qualified Data.Vector as V
 
 assemble :: Int -> Program -> AssembledProgram
 assemble bits program = AP bits $ V.fromList resolved

@@ -1,13 +1,13 @@
 module Main where
 
-import Parser
-import Subleq
-import ParseSubleq
 import Assembler
 import Execute
+import ParseSubleq
+import Parser
+import Subleq
 
 import System.Environment (getArgs)
-import System.IO (hSetBuffering, stdout, BufferMode (NoBuffering))
+import System.IO (BufferMode(NoBuffering), hSetBuffering, stdout)
 
 main :: IO ()
 main = do

@@ -1,20 +1,21 @@
 module Execute where
 
-import Subleq
 import IntTools
+import Subleq
 
+import Data.Char (chr, ord)
 import Data.Int (Int64)
 import Data.Vector ((!), (//))
-import Data.Char (chr, ord)
 import qualified Data.Vector as V
 
 execute :: Int64 -> AssembledProgram -> IO ()
-execute ix (AP bits ap) =
-  if ix < 0
-  then putStrLn "Exited, jump to negative address."
-  else if ix + 3 > ec (V.length ap)
-  then putStrLn "Exited, not enough data left."
-  else do
+execute ix (AP bits ap)
+  | ix < 0
+  = putStrLn "Exited, jump to negative address."
+  | ix + 3 > ec (V.length ap)
+  = putStrLn "Exited, not enough data left."
+  | otherwise
+  = do
     let
       valA = ap ! ec ix
       tgtA = ap ! ec (ix + 1)
@@ -29,12 +30,12 @@ execute ix (AP bits ap) =
     then do
       ch <- ec . ord <$> getChar :: IO Int64
       execute jmpA (next ch)
-    else do
+    else
       if tgtA < 0
       then do
         putChar $ chr $ ec val
         execute jmpA nr
-      else do
+      else
         if result > 0
         then execute (ix + 3) nr
         else execute jmpA nr

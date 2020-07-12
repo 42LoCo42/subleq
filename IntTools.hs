@@ -15,6 +15,12 @@ toSigned bits val =
      then val - 2 ^ bits
      else val
 
+toUnsigned' :: (Enum a, Enum b) => Int -> a -> b
+toUnsigned' bits = ec . toUnsigned bits . ec
+
+toSigned' :: (Enum a, Enum b) => Int -> a -> b
+toSigned' bits = ec . toSigned bits . ec
+
 changeBits :: (Enum a, Enum b) => Int -> Int -> a -> b
 changeBits from to =
   ec . toSigned to . (`mod` 2 ^ to) .

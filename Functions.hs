@@ -36,4 +36,3 @@ loopF [p, to, inc, tmp1, tmp2] =
   where
     nxt = Cell Nothing (Offset 1)
 loopF cs = cs
-

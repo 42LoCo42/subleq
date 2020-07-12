@@ -68,9 +68,5 @@ notNull (Parser p) = Parser $ \input -> do
 sepBy :: Parser a -> Parser b -> Parser [b]
 sepBy sep elemP = (:) <$> elemP <*> many (sep *> elemP) <|> pure []
 
--- A Parser that parses multiple or no elements
-multOrNone :: Parser a -> Parser [a]
-multOrNone p = many p <|> pure []
-
 optional :: a -> Parser a -> Parser a
 optional a p = p <|> pure a

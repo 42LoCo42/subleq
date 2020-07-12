@@ -1,13 +1,13 @@
 module ParseSubleq where
 
+import Functions
+import IntTools
 import Parser
 import Subleq
-import IntTools
-import Functions
 
-import Data.Char (isAscii, isLetter, isDigit, ord, isSpace)
-import Data.Int (Int64)
 import Control.Applicative ((<|>), many)
+import Data.Char (isAscii, isDigit, isLetter, isSpace, ord)
+import Data.Int (Int64)
 
 -- Helper ---------------------------------------------------------------------
 singleton :: a -> [a]
@@ -68,8 +68,8 @@ codeP =
 -- Cell group -----------------------------------------------------------------
 cellP :: Parser Cell
 cellP =
-  Cell <$> (maybeP lblDefP) <*> codeP <|>
-  const (Cell Nothing (Offset 1)) <$> charP ';'
+  Cell <$> maybeP lblDefP <*> codeP <|>
+  Cell Nothing (Offset 1) <$ charP ';'
 
 -- String ---------------------------------------------------------------------
 stringLiteralP :: Parser [Cell]
@@ -84,7 +84,7 @@ lbldCellsP p = do
   lbl <- lblDefP
   cs <- p
   let (Cell _ c : t) = cs
-  return $ if null cs then [] else (Cell (Just lbl) c : t)
+  return $ if null cs then [] else Cell (Just lbl) c : t
 
 -- Generic function parser ----------------------------------------------------
 functionP :: String -> ([Cell] -> [Cell]) -> Parser [Cell]
@@ -111,7 +111,7 @@ cellsP = foldr1 (<|>) (lbldGroups ++ realGroups) <|> singleton <$> cellP
 
 -- Line group -----------------------------------------------------------------
 lineP :: Parser [Cell]
-lineP = const [] <$> commentP <|> concat <$> sepBy wsP cellsP
+lineP = [] <$ commentP <|> concat <$> sepBy wsP cellsP
 
 -- Program group --------------------------------------------------------------
 programP :: Parser Program
